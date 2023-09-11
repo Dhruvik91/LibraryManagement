@@ -20,6 +20,7 @@ function addToLibrary(newBook) {
 
     if (!duplicateBook) {
         library.push(newBook);
+        saveLibraryToLocalStorage();
     } else {
         console.warn("The ISBN already exists:", newBook.ISBN);
     }
@@ -27,7 +28,14 @@ function addToLibrary(newBook) {
     return library;
 }
 
-function checkedOutBook(isbn, noOfDays) {
+function checkedOutBook(isbn, noOfDays = 7) {
+
+    if (noOfDays <= 0) {
+        console.warn("You entered the invalid number of days.");
+        return;
+    }
+
+
     const book = getTheBook(isbn);
 
     if (!book) {
@@ -42,7 +50,8 @@ function checkedOutBook(isbn, noOfDays) {
         const dueDate = new Date();
         dueDate.setDate(dueDate.getDate() + noOfDays);
         book.dueDate = dueDate;
-        console.log(`Checked out: ${book.Title}, Due Date: ${dueDate}`);
+        console.log(`Checked out: "${book.Title}", Due Date: ${dueDate}`);
+        saveLibraryToLocalStorage();
     }
 }
 
@@ -50,9 +59,12 @@ function returnBook(isbn) {
     const book = getTheBook(isbn);
     if (book) {
         book.checkedOut = false;
+        saveLibraryToLocalStorage();
+        console.log(`The book "${book.Title}" has been returned`);
+    } else {
+        console.warn("Please enter the right ISBN number");
     }
 }
-
 
 
 function findBookByAuthor(authorName) {
@@ -64,7 +76,6 @@ function findBookByAuthor(authorName) {
     });
     return booksByAuthor;
 }
-
 
 
 function listOverDueDate() {
@@ -92,6 +103,7 @@ function rateBook(isbn, rating) {
     if (book) {
         if (rating >= 1 && rating <= 5) {
             book.rating.push(rating);
+            saveLibraryToLocalStorage();
         }
         else (console.warn("Enter the correct rating. It is not in the range of 1 to 5"));
     }
@@ -108,7 +120,9 @@ function getAverageOfRating(isbn) {
 
         let average = sum / arrayOfRating.length;
 
-        return average;
+         const result = Math.round(average * 100) / 100;
+
+        return (`The ${book.Title} has the average rating of ${result}`);
     }
 
     else {
@@ -120,13 +134,33 @@ function sortBooks(criteria) {
     library.sort((a, b) => {
         const criteriaA = a[criteria];
         const criteriaB = b[criteria];
-        criteriaA.localeCompare(criteriaB); // Change to criteriaB.localeCompare(criteriaA) for descending order
+        return criteriaA.localeCompare(criteriaB); 
     });
 }
 
 function getTheBook(isbn) {
     return library.find((book) => book.ISBN === isbn);
 }
+
+function saveLibraryToLocalStorage() {
+    localStorage.setItem('library', JSON.stringify(library));
+}
+
+
+function loadLibraryFromLocalStorage() {
+    const libraryData = localStorage.getItem('library');
+    if (libraryData) {
+        return JSON.parse(libraryData);
+    } else {
+        return [];
+    }
+}
+
+function initializeLibrary() {
+    library = loadLibraryFromLocalStorage();
+}
+
+
 
 
 // test cases 
@@ -142,9 +176,17 @@ addToLibrary(book2);
 addToLibrary(book4);
 
 
+console.group("Checked Out Books");
+console.log("List of all the books:");
 checkedOutBook(23456, 1);
+console.groupEnd();
 
-returnBook(12344);
+
+console.group("Returned Books");
+console.log("List of all the books:");
+returnBook(23456);
+console.groupEnd();
+
 
 
 console.group("Library:");
@@ -155,9 +197,9 @@ console.groupEnd();
 
 console.group("Ratings:");
 console.log("Ratings Of the book:");
-console.table(rateBook(23456, 4));
-rateBook(23456, 3);
-rateBook(23456, 5);
+console.table(rateBook(23456, 4.345));
+rateBook(23456, 3.567);
+rateBook(23456, 4.344);
 console.groupEnd();
 
 
@@ -185,7 +227,9 @@ console.log("List of all the books:");
 console.table(library);
 console.groupEnd();
 
+console.group("Average Ratings:")
+console.log(getAverageOfRating(23456));
+console.groupEnd();
 
-console.log("The average of the ratings is:", getAverageOfRating(23456));
+console.log(sortBooks('rating'));
 
-console.log(sortBooks(library.rating));
