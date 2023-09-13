@@ -233,3 +233,5 @@ console.groupEnd();
 
 console.log(sortBooks('rating'));
 
+console.log(sortBooks('rating'));
+
