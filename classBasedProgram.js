@@ -8,6 +8,7 @@ class Book {
         this.checkedCount = 0;
         this.dueDate = null;
         this.rating = [];
+        this.comments = [];
     }
 }
 
@@ -98,12 +99,13 @@ class Library {
         return overdueBooks;
     }
 
-    rateBook(isbn, rating) {
+    rateBook(isbn, rating, comment) {
         const book = this.getTheBook(isbn);
 
         if (book) {
             if (rating >= 1 && rating <= 5) {
                 book.rating.push(rating);
+                book.comments.push(comment);
                 this.saveLibraryToLocalStorage();
                 console.log(`The book name "${book.title}" has the rating:`, book.rating);
             }
@@ -133,19 +135,24 @@ class Library {
     }
 
     sortBooks(criteria) {
+
+        console.log(`Sorted by using criteria ${criteria}`);
+
         let stored = this.library.sort((a, b) => {
 
             const criteriaA = a[criteria];
             const criteriaB = b[criteria];
-
+            
             if (typeof criteriaA === 'string') {
+                
                 return (criteriaA.trim()).localeCompare(criteriaB.trim());
 
             } else if (typeof criteriaA === 'number') {
+                
                 return criteriaA - criteriaB;
 
             } else {
-                return 0; // No change in order for unknown data types
+                return 0; 
             }
         });
         return stored;
@@ -171,10 +178,10 @@ class Library {
 }
 
 const library = new Library();
-const book1 = library.createBook("The story of my life", "Yash", 10-23-44);
-const book2 = library.createBook("Will it be two-sided", "Meet", 2-345-69);
-const book3 = library.createBook("My name is Hero", "Parth", 795-6-468);
-const book4 = library.createBook("I started the War", "Ravi", 645-6-4-6);
+const book1 = library.createBook("The story of my life", "Yash", 123);
+const book2 = library.createBook("Will it be two-sided", "Meet", 456);
+const book3 = library.createBook("My name is Hero", "Parth", 789);
+const book4 = library.createBook("I started the War", "Ravi", 398);
 
 library.addToLibrary(book1);
 library.addToLibrary(book2);
@@ -183,12 +190,12 @@ library.addToLibrary(book4);
 
 console.group("Checked Out Books");
 console.log("List of all the books:");
-library.checkedOutBook(2-345-69, 1);
+library.checkedOutBook(456, 1);
 console.groupEnd();
 
 console.group("Returned Books");
 console.log("List of all the books:");
-library.returnBook(2-345-69);
+library.returnBook(456);
 console.groupEnd();
 
 console.group("Library:");
@@ -203,13 +210,13 @@ console.groupEnd();
 
 console.group("Ratings:");
 console.log("Ratings Of the book:");
-library.rateBook(2-345-69, 4.345);
-library.rateBook(2-345-69, 3.567);
-library.rateBook(2-345-69, 4.344);
+library.rateBook(456, 4.345, 'This is not a good book');
+library.rateBook(4, 3.567);
+library.rateBook(456, 4.344, "Hello");
 console.groupEnd();
 
 console.group("Average Ratings:")
-console.log(library.getAverageOfRating(2-345-69));
+console.log(library.getAverageOfRating(456));
 console.groupEnd();
 
 console.group("OverDueDate Books:-");
@@ -220,6 +227,14 @@ console.groupEnd();
 
 console.group("Sorted Books:-");
 console.log("List of sorted books",);
-console.table(library.sortBooks('checkedCount'));
+console.table(library.sortBooks('author'));
+console.groupEnd();
+
+
+
+
+console.group("Library:");
+console.log("List of all the books:");
+console.table(library.library);
 console.groupEnd();
 
