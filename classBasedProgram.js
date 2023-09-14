@@ -12,6 +12,7 @@ class Book {
 }
 
 class Library {
+
     constructor() {
         this.library = [];
         this.MAX_COUNT = 3;
@@ -34,13 +35,13 @@ class Library {
         }
     }
 
-    checkedOutBook(bookISBN, noOfDays = 7) { // Change parameter name to bookISBN
+    checkedOutBook(bookISBN, noOfDays = 7) {
         if (noOfDays <= 0) {
             console.warn("You entered an invalid number of days.");
             return;
         }
 
-        const book = this.getTheBook(bookISBN); // Change parameter name to bookISBN
+        const book = this.getTheBook(bookISBN);
 
         if (!book) {
             console.warn("Book not found in the library.");
@@ -105,7 +106,7 @@ class Library {
                 book.rating.push(rating);
                 this.saveLibraryToLocalStorage();
                 console.log(`The book name "${book.title}" has the rating:`, book.rating);
-            } 
+            }
             else {
                 console.warn("Enter the correct rating. It is not in the range of 1 to 5");
             }
@@ -132,18 +133,22 @@ class Library {
     }
 
     sortBooks(criteria) {
-        this.library.sort((a, b) => {
+        let stored = this.library.sort((a, b) => {
+
             const criteriaA = a[criteria];
             const criteriaB = b[criteria];
-    
+
             if (typeof criteriaA === 'string') {
-                console.log(criteriaA.trim()).localeCompare(criteriaB.trim());
+                return (criteriaA.trim()).localeCompare(criteriaB.trim());
+
             } else if (typeof criteriaA === 'number') {
                 return criteriaA - criteriaB;
+
             } else {
                 return 0; // No change in order for unknown data types
             }
         });
+        return stored;
     }
 
     getTheBook(isbn) {
@@ -166,23 +171,24 @@ class Library {
 }
 
 const library = new Library();
-const book1 = library.createBook("The story of my life", "Ravi", 12344);
-const book2 = library.createBook("Will it be two-sided", "Ravinath", 23456);
-const book3 = library.createBook("My name is Hero", "Ravisankar", 45646);
-const book4 = library.createBook("I started the War", "Ravi", 645646);
+const book1 = library.createBook("The story of my life", "Yash", 10-23-44);
+const book2 = library.createBook("Will it be two-sided", "Meet", 2-345-69);
+const book3 = library.createBook("My name is Hero", "Parth", 795-6-468);
+const book4 = library.createBook("I started the War", "Ravi", 645-6-4-6);
 
 library.addToLibrary(book1);
 library.addToLibrary(book2);
+library.addToLibrary(book3);
 library.addToLibrary(book4);
 
 console.group("Checked Out Books");
 console.log("List of all the books:");
-library.checkedOutBook(23456, 1);
+library.checkedOutBook(2-345-69, 1);
 console.groupEnd();
 
 console.group("Returned Books");
 console.log("List of all the books:");
-library.returnBook(23456);
+library.returnBook(2-345-69);
 console.groupEnd();
 
 console.group("Library:");
@@ -197,13 +203,13 @@ console.groupEnd();
 
 console.group("Ratings:");
 console.log("Ratings Of the book:");
-(library.rateBook(23456, 4.345));
-library.rateBook(23456, 3.567);
-library.rateBook(23456, 4.344);
+library.rateBook(2-345-69, 4.345);
+library.rateBook(2-345-69, 3.567);
+library.rateBook(2-345-69, 4.344);
 console.groupEnd();
 
 console.group("Average Ratings:")
-console.log(library.getAverageOfRating(23456));
+console.log(library.getAverageOfRating(2-345-69));
 console.groupEnd();
 
 console.group("OverDueDate Books:-");
@@ -211,7 +217,9 @@ console.log("List of overdue date books",);
 console.table(library.listOverDueDate());
 console.groupEnd();
 
+
 console.group("Sorted Books:-");
 console.log("List of sorted books",);
-console.table(library.sortBooks('title'));
+console.table(library.sortBooks('checkedCount'));
 console.groupEnd();
+
