@@ -9,6 +9,7 @@ class Book {
         this.dueDate = null;
         this.rating = [];
         this.comments = [];
+        this.transactions = [];
     }
 }
 
@@ -134,9 +135,22 @@ class Library {
         }
     }
 
+    getTotalReview(isbn) {
+        const book = this.getTheBook(isbn);
+
+        if (book) {
+            let reviews = book.rating.length + book.comments.length;
+
+            return `The "${book.title}" has an total reviews of ${reviews}`;
+        }
+        else {
+            console.warn("Enter the correct ISBN");
+        }
+    }
+
     sortBooks(criteria) {
 
-        console.log(`Sorted by using criteria ${criteria}`);
+         console.log(`Sorted by using criteria ${criteria}`);
 
         let stored = this.library.sort((a, b) => {
 
@@ -156,6 +170,26 @@ class Library {
             }
         });
         return stored;
+    }
+
+    filterReviews(criteria) {
+
+        let stored = this.sortBooks(criteria);
+        console.log(`Filtered by using criteria ${criteria}`);
+        return stored;
+
+    }
+
+    transactionHistory(isbn, user) {
+        const book = this.getTheBook(isbn);
+        if (book) {
+            if ()
+
+            
+        }
+        else {
+            console.warn("Enter the correct ISBN");
+        }
     }
 
     getTheBook(isbn) {
@@ -219,6 +253,10 @@ console.group("Average Ratings:")
 console.log(library.getAverageOfRating(456));
 console.groupEnd();
 
+console.group("Average Reviews:")
+console.log(library.getTotalReview(456));
+console.groupEnd();
+
 console.group("OverDueDate Books:-");
 console.log("List of overdue date books",);
 console.table(library.listOverDueDate());
@@ -228,6 +266,11 @@ console.groupEnd();
 console.group("Sorted Books:-");
 console.log("List of sorted books",);
 console.table(library.sortBooks('author'));
+console.groupEnd();
+
+console.group("Filtered Reviews:-");
+console.log("List of filtered books",);
+console.table(library.filterReviews('comments'));
 console.groupEnd();
 
 
