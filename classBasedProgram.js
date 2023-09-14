@@ -1,3 +1,4 @@
+localStorage.clear();
 class Book {
     constructor(title, author, bookISBN) {
         this.title = title;
@@ -33,13 +34,13 @@ class Library {
         }
     }
 
-    checkedOutBook(isbn, noOfDays = 7) {
+    checkedOutBook(bookISBN, noOfDays = 7) { // Change parameter name to bookISBN
         if (noOfDays <= 0) {
             console.warn("You entered an invalid number of days.");
             return;
         }
 
-        const book = this.getTheBook(isbn);
+        const book = this.getTheBook(bookISBN); // Change parameter name to bookISBN
 
         if (!book) {
             console.warn("Book not found in the library.");
@@ -103,7 +104,9 @@ class Library {
             if (rating >= 1 && rating <= 5) {
                 book.rating.push(rating);
                 this.saveLibraryToLocalStorage();
-            } else {
+                console.log(`The book name "${book.title}" has the rating:`, book.rating);
+            } 
+            else {
                 console.warn("Enter the correct rating. It is not in the range of 1 to 5");
             }
         }
@@ -121,8 +124,9 @@ class Library {
 
             const result = Math.round(average * 100) / 100;
 
-            return `The ${book.title} has an average rating of ${result}`;
-        } else {
+            return `The "${book.title}" has an average rating of ${result}`;
+        }
+        else {
             console.warn("Enter the correct ISBN");
         }
     }
@@ -131,7 +135,14 @@ class Library {
         this.library.sort((a, b) => {
             const criteriaA = a[criteria];
             const criteriaB = b[criteria];
-            return criteriaA.localeCompare(criteriaB);
+    
+            if (typeof criteriaA === 'string') {
+                console.log(criteriaA.trim()).localeCompare(criteriaB.trim());
+            } else if (typeof criteriaA === 'number') {
+                return criteriaA - criteriaB;
+            } else {
+                return 0; // No change in order for unknown data types
+            }
         });
     }
 
@@ -177,4 +188,30 @@ console.groupEnd();
 console.group("Library:");
 console.log("List of all the books:");
 console.table(library.library);
+console.groupEnd();
+
+console.group("Books By same Author:");
+console.log("List of all the books:");
+console.table(library.findBookByAuthor("Ravi"));
+console.groupEnd();
+
+console.group("Ratings:");
+console.log("Ratings Of the book:");
+(library.rateBook(23456, 4.345));
+library.rateBook(23456, 3.567);
+library.rateBook(23456, 4.344);
+console.groupEnd();
+
+console.group("Average Ratings:")
+console.log(library.getAverageOfRating(23456));
+console.groupEnd();
+
+console.group("OverDueDate Books:-");
+console.log("List of overdue date books",);
+console.table(library.listOverDueDate());
+console.groupEnd();
+
+console.group("Sorted Books:-");
+console.log("List of sorted books",);
+console.table(library.sortBooks('title'));
 console.groupEnd();

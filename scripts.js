@@ -234,3 +234,5 @@ console.log(sortBooks('rating'));
 
 console.log(sortBooks('rating'));
 
+localStorage.clear();
+
