@@ -35,7 +35,6 @@ function checkedOutBook(isbn, noOfDays = 7) {
         return;
     }
 
-
     const book = getTheBook(isbn);
 
     if (!book) {
