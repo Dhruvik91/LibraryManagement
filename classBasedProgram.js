@@ -37,7 +37,7 @@ class Library {
         }
     }
 
-    checkedOutBook(bookISBN, noOfDays = 7) {
+    checkedOutBook(bookISBN, noOfDays = 7, user) {
         if (noOfDays <= 0) {
             console.warn("You entered an invalid number of days.");
             return;
@@ -55,6 +55,8 @@ class Library {
             book.checkedOut = true;
             book.checkedCount++;
             const dueDate = new Date();
+            const now = new Date();
+            book.transactions.push(`The book "${book.title}" has being checkout by ${user} at ${now}`);
             dueDate.setDate(dueDate.getDate() + noOfDays);
             book.dueDate = dueDate;
             console.log(`Checked out: "${book.title}", Due Date: ${dueDate}`);
@@ -62,10 +64,12 @@ class Library {
         }
     }
 
-    returnBook(isbn) {
+    returnBook(isbn, user) {
         const book = this.getTheBook(isbn);
         if (book) {
             book.checkedOut = false;
+            const now = new Date();
+            book.transactions.push(`The book "${book.title}" has being returned by ${user} at ${now}`);
             this.saveLibraryToLocalStorage();
             console.log(`The book "${book.title}" has been returned`);
         } else {
@@ -174,16 +178,18 @@ class Library {
 
     filterReviews(criteria) {
 
-        let stored = this.sortBooks(criteria);
+        let stored = this.library.filter((book) => book.criteria > 0
+        );
+        
         console.log(`Filtered by using criteria ${criteria}`);
         return stored;
 
     }
 
-    transactionHistory(isbn, user) {
+    transactionHistory(isbn) {
         const book = this.getTheBook(isbn);
         if (book) {
-            if ()
+           
 
             
         }
@@ -224,12 +230,12 @@ library.addToLibrary(book4);
 
 console.group("Checked Out Books");
 console.log("List of all the books:");
-library.checkedOutBook(456, 1);
+library.checkedOutBook(456, 1, "Dhruvik");
 console.groupEnd();
 
 console.group("Returned Books");
 console.log("List of all the books:");
-library.returnBook(456);
+library.returnBook(456, "Ravi");
 console.groupEnd();
 
 console.group("Library:");
@@ -270,9 +276,8 @@ console.groupEnd();
 
 console.group("Filtered Reviews:-");
 console.log("List of filtered books",);
-console.table(library.filterReviews('comments'));
+console.table(library.filterReviews('rating'));
 console.groupEnd();
-
 
 
 
