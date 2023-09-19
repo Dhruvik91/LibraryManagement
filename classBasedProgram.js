@@ -37,6 +37,32 @@ class Library {
         }
     }
 
+    transaction(user) {
+        const currentDate = new Date();
+        let transactionValues = {};
+        let checkingCondition = 0;
+        this.library.forEach((book) => {
+            checkingCondition = book.checkedCount !== 0;
+            if (book.checkedOut && checkingCondition) {
+                transactionValues.Date = `CheckedOut at ${currentDate}`;
+                transactionValues.Type = "CheckedOut";
+                transactionValues.User = user;
+            }
+            else if (!book.checkedOut && checkingCondition) {
+                transactionValues.Date = `Returned at ${currentDate}`;
+                transactionValues.Type = "Returned";
+                transactionValues.User = user;
+            }
+            else {
+                console.warn("The Transaction is not done");
+            }
+
+        });
+        return (transactionValues);
+    }
+
+
+
     checkedOutBook(bookISBN, noOfDays = 7, user) {
         if (noOfDays <= 0) {
             console.warn("You entered an invalid number of days.");
@@ -55,8 +81,8 @@ class Library {
             book.checkedOut = true;
             book.checkedCount++;
             const dueDate = new Date();
-            const now = new Date();
-            book.transactions.push(`The book "${book.title}" has being checkout by ${user} at ${now}`);
+            let books = this.transaction(user);
+            book.transactions.push(books);
             dueDate.setDate(dueDate.getDate() + noOfDays);
             book.dueDate = dueDate;
             console.log(`Checked out: "${book.title}", Due Date: ${dueDate}`);
@@ -69,13 +95,14 @@ class Library {
         if (book) {
             book.checkedOut = false;
             const now = new Date();
-            book.transactions.push(`The book "${book.title}" has being returned by ${user} at ${now}`);
-            this.saveLibraryToLocalStorage();
+            let books = this.transaction(user);
+            book.transactions.push(books);
             console.log(`The book "${book.title}" has been returned`);
         } else {
             console.warn("Please enter the correct ISBN number");
         }
     }
+
 
     findBookByAuthor(authorName) {
         const booksByAuthor = [];
@@ -154,23 +181,23 @@ class Library {
 
     sortBooks(criteria) {
 
-         console.log(`Sorted by using criteria ${criteria}`);
+        console.log(`Sorted by using criteria ${criteria}`);
 
         let stored = this.library.sort((a, b) => {
 
             const criteriaA = a[criteria];
             const criteriaB = b[criteria];
-            
+
             if (typeof criteriaA === 'string') {
-                
+
                 return (criteriaA.trim()).localeCompare(criteriaB.trim());
 
             } else if (typeof criteriaA === 'number') {
-                
+
                 return criteriaA - criteriaB;
 
             } else {
-                return 0; 
+                return 0;
             }
         });
         return stored;
@@ -180,18 +207,17 @@ class Library {
 
         let stored = this.library.filter((book) => book.criteria > 0
         );
-        
+
         console.log(`Filtered by using criteria ${criteria}`);
         return stored;
 
     }
 
-    transactionHistory(isbn) {
+    getTransactionHistory(isbn) {
         const book = this.getTheBook(isbn);
         if (book) {
-           
+            return book.transactions;
 
-            
         }
         else {
             console.warn("Enter the correct ISBN");
@@ -231,6 +257,11 @@ library.addToLibrary(book4);
 console.group("Checked Out Books");
 console.log("List of all the books:");
 library.checkedOutBook(456, 1, "Dhruvik");
+console.groupEnd();
+
+console.group("Checked Out Books");
+console.log("List of all the books:");
+library.checkedOutBook(123, 1, "Rishi");
 console.groupEnd();
 
 console.group("Returned Books");
@@ -279,7 +310,10 @@ console.log("List of filtered books",);
 console.table(library.filterReviews('rating'));
 console.groupEnd();
 
-
+console.group("Transactions:-");
+console.log("List of transaction books",);
+console.table(library.getTransactionHistory(456));
+console.groupEnd();
 
 console.group("Library:");
 console.log("List of all the books:");
