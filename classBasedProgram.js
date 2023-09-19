@@ -16,7 +16,6 @@ class Book {
 class Library {
 
     constructor() {
-        this.library = [];
         this.MAX_COUNT = 3;
         this.loadLibraryFromLocalStorage();
     }
@@ -53,10 +52,6 @@ class Library {
                 transactionValues.Type = "Returned";
                 transactionValues.User = user;
             }
-            else {
-                console.warn("The Transaction is not done");
-            }
-
         });
         return (transactionValues);
     }
@@ -213,15 +208,23 @@ class Library {
 
     }
 
-    getTransactionHistory(isbn) {
-        const book = this.getTheBook(isbn);
-        if (book) {
-            return book.transactions;
+    getTransactionHistory() {
 
+        let TransHistory = [];
+        let Trans = this.library.filter((book) => book.checkedCount !== 0);
+        
+        for (let t of Trans) {
+
+            if (t) {
+                for (let i = 0; i < t.transactions.length; i++) {
+                    TransHistory.push(t.transactions[i]);
+                }
+            } else {
+                console.warn("Something goes wrong!!");
+            }
         }
-        else {
-            console.warn("Enter the correct ISBN");
-        }
+
+        return TransHistory;
     }
 
     getTheBook(isbn) {
@@ -282,7 +285,7 @@ console.groupEnd();
 console.group("Ratings:");
 console.log("Ratings Of the book:");
 library.rateBook(456, 4.345, 'This is not a good book');
-library.rateBook(4, 3.567);
+library.rateBook(456, 3.567);
 library.rateBook(456, 4.344, "Hello");
 console.groupEnd();
 
@@ -312,11 +315,13 @@ console.groupEnd();
 
 console.group("Transactions:-");
 console.log("List of transaction books",);
-console.table(library.getTransactionHistory(456));
+console.table(library.getTransactionHistory());
 console.groupEnd();
 
 console.group("Library:");
 console.log("List of all the books:");
 console.table(library.library);
 console.groupEnd();
+
+
 
