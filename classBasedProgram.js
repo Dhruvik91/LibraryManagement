@@ -56,8 +56,6 @@ class Library {
         return (transactionValues);
     }
 
-
-
     checkedOutBook(bookISBN, noOfDays = 7, user) {
         if (noOfDays <= 0) {
             console.warn("You entered an invalid number of days.");
@@ -75,9 +73,9 @@ class Library {
         } else {
             book.checkedOut = true;
             book.checkedCount++;
-            const dueDate = new Date();
             let books = this.transaction(user);
             book.transactions.push(books);
+            const dueDate = new Date();
             dueDate.setDate(dueDate.getDate() + noOfDays);
             book.dueDate = dueDate;
             console.log(`Checked out: "${book.title}", Due Date: ${dueDate}`);
@@ -212,7 +210,7 @@ class Library {
 
         let TransHistory = [];
         let Trans = this.library.filter((book) => book.checkedCount !== 0);
-        
+
         for (let t of Trans) {
 
             if (t) {
@@ -226,6 +224,7 @@ class Library {
 
         return TransHistory;
     }
+    
 
     getTheBook(isbn) {
         return this.library.find((book) => book.bookISBN === isbn);
