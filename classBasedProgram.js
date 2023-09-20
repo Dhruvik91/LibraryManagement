@@ -45,20 +45,24 @@ class Library {
 
     addToLibrary(newBook) {
 
-        const duplicateBook = this.library.find((book) => book.bookISBN === newBook.bookISBN);
+        try {
 
-        if (!duplicateBook) {
+            const duplicateBook = this.library.find((book) => book.bookISBN === newBook.bookISBN);
+
+            if (duplicateBook) {
+
+                throw new Error("The ISBN already exists!!!");
+            }
 
             this.library.push(newBook);
 
             this.saveLibraryToLocalStorage();
 
-            return;
         }
 
-        else {
+        catch (err) {
 
-            console.warn("The ISBN already exists:", newBook.bookISBN);
+            console.error(err);
         }
     }
 
@@ -67,31 +71,20 @@ class Library {
 
     checkedOutBook(bookISBN, noOfDays = 7, user) {
 
-        if (noOfDays <= 0) {
+        try {
 
-            console.warn("You entered an invalid number of days.");
-            return;
-        }
+            if (noOfDays <= 0) {
 
-        const book = this.getTheBook(bookISBN);
+                throw new Error("You entered an invalid number of days.");
 
-        if (!book) {
+            }
 
-            console.warn("Book not found in the library.");
-        }
+            const book = this.getTheBook(bookISBN);
 
-        else if (book.checkedCount > this.MAX_COUNT) {
+            if (!book) {
 
-            console.warn("This book is unavailable for checkout.");
-        }
-
-        else if (book.checkedOut) {
-
-            console.warn("This book is already checked out.");
-
-        }
-
-        else {
+                throw new Error(`Book with ISBN "${bookISBN}" not found.`);
+            }
 
             book.checkedOut = true;
 
@@ -107,9 +100,15 @@ class Library {
 
             book.dueDate = dueDate;
 
-            console.log(`Checked out: "${book.title}", Due Date: ${dueDate}`);
+            console.log(`Checked out: "${book.title}", \n Due Date: ${dueDate}`);
 
             this.saveLibraryToLocalStorage();
+
+
+        } catch (err) {
+
+            console.error(err);
+
         }
     }
 
@@ -117,9 +116,14 @@ class Library {
 
     returnBook(isbn, user) {
 
-        const book = this.getTheBook(isbn);
+        try {
 
-        if (book && book.checkedCount !== 0) {
+            const book = this.getTheBook(isbn);
+
+            if (!book && book.checkedCount === 0) {
+
+                throw new Error("Please enter the correct ISBN number");
+            }
 
             book.checkedOut = false;
 
@@ -132,11 +136,11 @@ class Library {
             console.log(`The book "${book.title}" has been returned`);
         }
 
-        else {
+        catch (error) {
 
-            console.warn("Please enter the correct ISBN number");
-            console.error("May the book is not checked Out");
+            console.error(error);
         }
+
     }
 
     //-------------------------------------------------------------------
@@ -156,7 +160,7 @@ class Library {
 
             if (book.checkedOut && checkingCondition) {
 
-                transactionValues.Date = `CheckedOut at ${currentDate}`;
+                transactionValues.Date = currentDate;
 
                 transactionValues.Type = "CheckedOut";
 
@@ -165,7 +169,7 @@ class Library {
 
             else if (!book.checkedOut && checkingCondition) {
 
-                transactionValues.Date = `Returned at ${currentDate}`;
+                transactionValues.Date = currentDate;
 
                 transactionValues.Type = "Returned";
 
@@ -184,17 +188,33 @@ class Library {
 
         const booksByAuthor = [];
 
-        this.library.forEach((book) => {
+        try {
 
-            if (book.author === authorName) {
+            this.library.forEach((book) => {
 
-                booksByAuthor.push(book.title);
+                if (book.author === authorName) {
+
+                    booksByAuthor.push(book);
+                }
+            });
+
+            if (booksByAuthor.length === 0) {
+
+                throw new Error("No books found by this author.");
             }
-        });
-        return booksByAuthor;
+
+            return booksByAuthor;
+
+        } catch (error) {
+
+            console.error(error);
+        }
     }
 
+
+
     //-------------------------------------------------------------------
+
 
     listOverDueDate() {
 
@@ -218,7 +238,9 @@ class Library {
         return overdueBooks;
     }
 
+
     //-------------------------------------------------------------------
+
 
     rateBook(isbn, rating, comment) {
         const book = this.getTheBook(isbn);
@@ -265,6 +287,7 @@ class Library {
 
     //-------------------------------------------------------------------
 
+
     getTotalReview(isbn) {
         const book = this.getTheBook(isbn);
 
@@ -279,7 +302,9 @@ class Library {
         }
     }
 
+
     //-------------------------------------------------------------------
+
 
     sortBooks(criteria) {
 
@@ -305,7 +330,9 @@ class Library {
         return stored;
     }
 
+
     //-------------------------------------------------------------------
+
 
     filterReviews(criteria) {
 
@@ -317,7 +344,9 @@ class Library {
 
     }
 
+
     //-------------------------------------------------------------------
+
 
     getTransactionHistory() {
 
@@ -344,7 +373,9 @@ class Library {
         return TransHistory;
     }
 
+
     //-------------------------------------------------------------------
+
 
     getUserHistory() {
 
@@ -376,14 +407,13 @@ class Library {
                 console.warn("Something goes wrong!!");
             }
         }
-        
+
         return userHistory;
     }
 
 
-
-
     //-------------------------------------------------------------------
+
 
     getTheBook(isbn) {
 
@@ -437,6 +467,7 @@ library.addToLibrary(book1);
 library.addToLibrary(book2);
 library.addToLibrary(book3);
 library.addToLibrary(book4);
+console.log("\n");
 
 //-------------------------------------------------------------------
 
@@ -444,7 +475,8 @@ console.group("Checked Out Books");
 console.log("List of all the books:");
 library.checkedOutBook(456, 1, "Dhruvik");
 console.groupEnd();
-
+console.log("\n");
+console.log("\n");
 
 //-------------------------------------------------------------------
 
@@ -453,7 +485,8 @@ console.group("Checked Out Books");
 console.log("List of all the books:");
 library.checkedOutBook(123, 1, "Rishi");
 console.groupEnd();
-
+console.log("\n");
+console.log("\n");
 
 //-------------------------------------------------------------------
 
@@ -462,7 +495,8 @@ console.group("Returned Books");
 console.log("List of all the books:");
 library.returnBook(456, "Dhruvik");
 console.groupEnd();
-
+console.log("\n");
+console.log("\n");
 
 //-------------------------------------------------------------------
 
@@ -471,7 +505,8 @@ console.group("Library:");
 console.log("List of all the books:");
 console.table(library.library);
 console.groupEnd();
-
+console.log("\n");
+console.log("\n");
 
 //-------------------------------------------------------------------
 
@@ -479,9 +514,10 @@ console.groupEnd();
 
 console.group("Books By same Author:");
 console.log("List of all the books:");
-console.table(library.findBookByAuthor("Ravi"));
+console.table(library.findBookByAuthor("Meet"));
 console.groupEnd();
-
+console.log("\n");
+console.log("\n");
 
 //-------------------------------------------------------------------
 
@@ -493,7 +529,8 @@ library.rateBook(456, 3.567);
 library.rateBook(123, 1.57, "OMG");
 library.rateBook(456, 4.344, "Hello");
 console.groupEnd();
-
+console.log("\n");
+console.log("\n");
 
 //-------------------------------------------------------------------
 
@@ -501,7 +538,8 @@ console.groupEnd();
 console.group("Average Ratings:")
 console.log(library.getAverageOfRating(456));
 console.groupEnd();
-
+console.log("\n");
+console.log("\n");
 
 //-------------------------------------------------------------------
 
@@ -509,7 +547,8 @@ console.groupEnd();
 console.group("Average Reviews:")
 console.log(library.getTotalReview(456));
 console.groupEnd();
-
+console.log("\n");
+console.log("\n");
 
 //-------------------------------------------------------------------
 
@@ -518,8 +557,8 @@ console.group("OverDueDate Books:-");
 console.log("List of overdue date books",);
 console.table(library.listOverDueDate());
 console.groupEnd();
-
-
+console.log("\n");
+console.log("\n");
 //-------------------------------------------------------------------
 
 
@@ -527,7 +566,8 @@ console.group("Sorted Books:-");
 console.log("List of sorted books",);
 console.table(library.sortBooks('transactions'));
 console.groupEnd();
-
+console.log("\n");
+console.log("\n");
 
 //-------------------------------------------------------------------
 
@@ -536,7 +576,8 @@ console.group("Filtered Reviews:-");
 console.log("List of filtered books",);
 console.table(library.filterReviews('rating'));
 console.groupEnd();
-
+console.log("\n");
+console.log("\n");
 
 //-------------------------------------------------------------------
 
@@ -545,7 +586,8 @@ console.group("Transactions:-");
 console.log("List of transaction books",);
 console.table(library.getTransactionHistory());
 console.groupEnd();
-
+console.log("\n");
+console.log("\n");
 
 //-------------------------------------------------------------------
 
@@ -554,7 +596,8 @@ console.group("Users:-");
 console.log("List of Users borrowed books",);
 console.table(library.getUserHistory());
 console.groupEnd();
-
+console.log("\n");
+console.log("\n");
 
 //-------------------------------------------------------------------
 
