@@ -1,4 +1,5 @@
 
+
 let library = [];
 const MAX_COUNT = 3;
 
@@ -34,7 +35,6 @@ function checkedOutBook(isbn, noOfDays = 7) {
         console.warn("You entered the invalid number of days.");
         return;
     }
-
 
     const book = getTheBook(isbn);
 
@@ -234,4 +234,6 @@ console.groupEnd();
 console.log(sortBooks('rating'));
 
 console.log(sortBooks('rating'));
+
+localStorage.clear();
 
