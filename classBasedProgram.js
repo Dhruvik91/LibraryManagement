@@ -325,7 +325,7 @@ class Library {
         let Trans = this.library.filter((book) => book.transactions.length !== 0);
 
         for (let t of Trans) {
-       
+
             if (t) {
 
                 for (let i = 0; i < t.transactions.length; i++) {
@@ -343,6 +343,45 @@ class Library {
 
         return TransHistory;
     }
+
+    //-------------------------------------------------------------------
+
+    getUserHistory() {
+
+        let userHistory = [];
+
+        let getUsers = this.library.filter((book) => book.transactions.length !== 0);
+
+        for (let user of getUsers) {
+
+            if (user) {
+
+                for (let i = 0; i < user.transactions.length; i++) {
+
+                    let userData = {};
+
+                    if (user.transactions[i].Type === "CheckedOut") {
+
+                        userData.Book = user.title;
+
+                        userData.Name = user.transactions[i].User;
+
+                        userHistory.push(userData);
+                    }
+                }
+            }
+
+            else {
+
+                console.warn("Something goes wrong!!");
+            }
+        }
+        
+        return userHistory;
+    }
+
+
+
 
     //-------------------------------------------------------------------
 
@@ -505,6 +544,15 @@ console.groupEnd();
 console.group("Transactions:-");
 console.log("List of transaction books",);
 console.table(library.getTransactionHistory());
+console.groupEnd();
+
+
+//-------------------------------------------------------------------
+
+
+console.group("Users:-");
+console.log("List of Users borrowed books",);
+console.table(library.getUserHistory());
 console.groupEnd();
 
 
