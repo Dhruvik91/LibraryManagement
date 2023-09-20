@@ -1,6 +1,6 @@
 localStorage.clear();
 class Book {
-    
+
     constructor(title, author, bookISBN) {
 
         this.title = title;
@@ -54,8 +54,8 @@ class Library {
             this.saveLibraryToLocalStorage();
 
             return;
-        } 
-        
+        }
+
         else {
 
             console.warn("The ISBN already exists:", newBook.bookISBN);
@@ -64,41 +64,6 @@ class Library {
 
     //-------------------------------------------------------------------
 
-    transaction(user) {
-
-        const currentDate = new Date();
-
-        let transactionValues = {};
-
-        let checkingCondition = 0;
-
-        this.library.forEach((book) => {
-
-            checkingCondition = book.checkedCount !== 0;
-
-            if (book.checkedOut && checkingCondition) {
-
-                transactionValues.Date = `CheckedOut at ${currentDate}`;
-
-                transactionValues.Type = "CheckedOut";
-
-                transactionValues.User = user;
-            }
-
-            else if (!book.checkedOut && checkingCondition) {
-
-                transactionValues.Date = `Returned at ${currentDate}`;
-
-                transactionValues.Type = "Returned";
-
-                transactionValues.User = user;
-            }
-        });
-
-        return (transactionValues);
-    }
-
-    //-------------------------------------------------------------------
 
     checkedOutBook(bookISBN, noOfDays = 7, user) {
 
@@ -154,7 +119,7 @@ class Library {
 
         const book = this.getTheBook(isbn);
 
-        if (book) {
+        if (book && book.checkedCount !== 0) {
 
             book.checkedOut = false;
 
@@ -170,10 +135,50 @@ class Library {
         else {
 
             console.warn("Please enter the correct ISBN number");
+            console.error("May the book is not checked Out");
         }
     }
 
     //-------------------------------------------------------------------
+
+
+    transaction(user) {
+
+        const currentDate = new Date();
+
+        let transactionValues = {};
+
+        let checkingCondition = 0;
+
+        this.library.filter((book) => {
+
+            checkingCondition = book.checkedCount !== 0;
+
+            if (book.checkedOut && checkingCondition) {
+
+                transactionValues.Date = `CheckedOut at ${currentDate}`;
+
+                transactionValues.Type = "CheckedOut";
+
+                transactionValues.User = user;
+            }
+
+            else if (!book.checkedOut && checkingCondition) {
+
+                transactionValues.Date = `Returned at ${currentDate}`;
+
+                transactionValues.Type = "Returned";
+
+                transactionValues.User = user;
+            }
+        });
+
+        return (transactionValues);
+    }
+
+
+    //-------------------------------------------------------------------
+
 
     findBookByAuthor(authorName) {
 
@@ -318,10 +323,10 @@ class Library {
     getTransactionHistory() {
 
         let TransHistory = [];
-        let Trans = this.library.filter((book) => book.checkedCount !== 0);
+        let Trans = this.library.filter((book) => book.transactions.length !== 0);
 
         for (let t of Trans) {
-
+       
             if (t) {
 
                 for (let i = 0; i < t.transactions.length; i++) {
@@ -417,7 +422,7 @@ console.groupEnd();
 
 console.group("Returned Books");
 console.log("List of all the books:");
-library.returnBook(456, "Ravi");
+library.returnBook(456, "Dhruvik");
 console.groupEnd();
 
 
