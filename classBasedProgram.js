@@ -1,3 +1,5 @@
+
+
 localStorage.clear();
 class Book {
 
@@ -23,6 +25,16 @@ class Book {
     }
 }
 
+
+//--------------------------------------------------------
+
+class InvalidISBN extends Error {
+
+    constructor(message) {
+        super(message);
+        this.name = "InvalidISBN";
+    }
+}
 
 //--------------------------------------------------------
 class Library {
@@ -116,14 +128,9 @@ class Library {
 
     returnBook(isbn, user) {
 
-        try {
+        const book = this.getTheBook(isbn);
 
-            const book = this.getTheBook(isbn);
-
-            if (!book && book.checkedCount === 0) {
-
-                throw new Error("Please enter the correct ISBN number");
-            }
+        if (book && book.checkedCount !== 0) {
 
             book.checkedOut = false;
 
@@ -135,12 +142,6 @@ class Library {
 
             console.log(`The book "${book.title}" has been returned`);
         }
-
-        catch (error) {
-
-            console.error(error);
-        }
-
     }
 
     //-------------------------------------------------------------------
@@ -243,9 +244,11 @@ class Library {
 
 
     rateBook(isbn, rating, comment) {
+
         const book = this.getTheBook(isbn);
 
         if (book) {
+
             if (rating >= 1 && rating <= 5) {
 
                 book.rating.push(rating);
@@ -257,16 +260,13 @@ class Library {
                 console.log(`The book name "${book.title}" has the rating:`, book.rating);
             }
 
-            else {
-
-                console.warn("Enter the correct rating. It is not in the range of 1 to 5");
-            }
         }
     }
 
     //-------------------------------------------------------------------
 
     getAverageOfRating(isbn) {
+
         const book = this.getTheBook(isbn);
 
         if (book) {
@@ -280,9 +280,7 @@ class Library {
 
             return `The "${book.title}" has an average rating of ${result}`;
         }
-        else {
-            console.warn("Enter the correct ISBN");
-        }
+
     }
 
     //-------------------------------------------------------------------
@@ -417,7 +415,22 @@ class Library {
 
     getTheBook(isbn) {
 
-        return this.library.find((book) => book.bookISBN === isbn);
+        let book = this.library.find((book) => book.bookISBN === isbn);
+
+        try {
+            if (!book) {
+
+                throw new InvalidISBN("Please Enter the correct ISBN number");
+
+            } else {
+
+                return book;
+            }
+
+        } catch (error) {
+
+            console.error(error);
+        }
     }
 
 
