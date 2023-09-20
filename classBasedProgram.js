@@ -309,8 +309,7 @@ class Library {
 
     filterReviews(criteria) {
 
-        let stored = this.library.filter((book) => book.criteria > 0
-        );
+        let stored = this.library.filter((book) => book[criteria].length !== 0);
 
         console.log(`Filtered by using criteria ${criteria}`);
 
@@ -452,6 +451,7 @@ console.group("Ratings:");
 console.log("Ratings Of the book:");
 library.rateBook(456, 4.345, 'This is not a good book');
 library.rateBook(456, 3.567);
+library.rateBook(123, 1.57, "OMG");
 library.rateBook(456, 4.344, "Hello");
 console.groupEnd();
 
@@ -486,7 +486,7 @@ console.groupEnd();
 
 console.group("Sorted Books:-");
 console.log("List of sorted books",);
-console.table(library.sortBooks('author'));
+console.table(library.sortBooks('transactions'));
 console.groupEnd();
 
 
